@@ -1,0 +1,9 @@
+id,order_date,region,revenue,is_anomaly,churned
+1,2026-01-01,NORTH,100,false,false
+2,2026-01-02,NORTH,110,false,false
+3,2026-01-03,NORTH,105,false,true
+4,2026-01-04,NORTH,500,true,true
+5,2026-01-01,SOUTH,80,false,false
+6,2026-01-02,SOUTH,90,false,false
+7,2026-01-03,SOUTH,95,false,false
+8,2026-01-04,SOUTH,300,true,true

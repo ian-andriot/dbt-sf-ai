@@ -1,0 +1,23 @@
+name: sf_ai
+version: 0.1.0
+config-version: 2
+
+require-dbt-version: ">=1.8.0"
+
+profile: sf_ai_integration_tests
+
+model-paths: ["integration_tests/models"]
+macro-paths: ["macros"]
+seed-paths: ["integration_tests/seeds"]
+test-paths: ["integration_tests/tests"]
+analysis-paths: ["analysis"]
+snapshot-paths: ["snapshots"]
+
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  sf_ai:
+    +materialized: view

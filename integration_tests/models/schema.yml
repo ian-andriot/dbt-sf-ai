@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: base_table
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
+      - name: revenue
+        tests:
+          - not_null
+  - name: semantic_view_basic
+    description: "Semantic view fixture used by the Cortex Agent example."
+  - name: semantic_view_with_copy_grants
+    config:
+      copy_grants: true
+  - name: table_refer_to_semantic_view
+    columns:
+      - name: region
+        tests:
+          - not_null

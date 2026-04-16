@@ -1,0 +1,15 @@
+sf_ai_integration_tests:
+  target: snowflake
+  outputs:
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_TEST_ACCOUNT', 'test_account') }}"
+      user: "{{ env_var('SNOWFLAKE_TEST_USER', 'test_user') }}"
+      password: "{{ env_var('SNOWFLAKE_TEST_PASSWORD', 'test_password') }}"
+      authenticator: "{{ env_var('SNOWFLAKE_TEST_AUTHENTICATOR', 'snowflake') }}"
+      role: "{{ env_var('SNOWFLAKE_TEST_ROLE', 'test_role') }}"
+      database: "{{ env_var('SNOWFLAKE_TEST_DATABASE', 'test_database') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_TEST_WAREHOUSE', 'test_warehouse') }}"
+      schema: "{{ env_var('SNOWFLAKE_TEST_SCHEMA', 'SF_AI_INTEGRATION_TESTS') }}"
+      threads: 4
+      client_session_keep_alive: false

@@ -1,0 +1,8 @@
+target/
+dbt_packages/
+logs/
+.dbt/
+integration_tests/.user.yml
+.venv/
+*.pyc
+.DS_Store

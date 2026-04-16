@@ -1,0 +1,6 @@
+sf-ai
+
+This package includes integration-test patterns adapted from
+Snowflake-Labs/dbt_semantic_view, licensed under Apache-2.0.
+
+The semantic_view shim delegates to Snowflake-Labs/dbt_semantic_view.
