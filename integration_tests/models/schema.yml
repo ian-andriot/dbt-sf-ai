@@ -20,3 +20,13 @@ models:
       - name: region
         tests:
           - not_null
+  - name: forecast_training_data
+    description: "Minimal forecast training input without exogenous features."
+  - name: forecast_predictions
+    description: "Materialized forecast inference output from the forecast model instance."
+  - name: anomaly_detections
+    description: "Materialized anomaly detection output from the anomaly model instance."
+  - name: classification_predictions
+    description: "Materialized classification predictions from the classification model instance."
+  - name: cortex_agent_responses
+    description: "Materialized Cortex Agent response for a sample semantic-view question."

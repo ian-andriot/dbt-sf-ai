@@ -10,4 +10,4 @@
   )
 }}
 
-TABLE({{ ref('base_table') }})
+TABLE({{ ref('forecast_training_data') }})

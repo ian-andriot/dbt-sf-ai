@@ -150,3 +150,16 @@ dbt deps
 dbt parse
 dbt build --target snowflake
 ```
+
+Run the opt-in AI integration path:
+
+```shell
+dbt build --target snowflake --vars '{"sf_ai_enable_ai_integration_tests": true}'
+```
+
+That path creates the example Snowflake AI objects and materializes downstream result tables:
+
+- `forecast_predictions` calls `{{ ref('forecast_example') }}!FORECAST(...)`.
+- `anomaly_detections` calls `{{ ref('anomaly_example') }}!DETECT_ANOMALIES(...)`.
+- `classification_predictions` calls `{{ ref('classification_example') }}!PREDICT(...)`.
+- `cortex_agent_responses` calls `SNOWFLAKE.CORTEX.DATA_AGENT_RUN(...)` with the `cortex_agent_example` relation.
