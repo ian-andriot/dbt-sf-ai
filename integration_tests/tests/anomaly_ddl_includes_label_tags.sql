@@ -9,7 +9,7 @@
 }}
 
 {% set relation = api.Relation.create(database=target.database, schema=target.schema, identifier='TEST_ANOMALY') %}
-{% set ddl = sf_ai.sf_ai__get_create_anomaly_detection_sql(
+{% set ddl = sf_ai.snowflake__get_create_anomaly_detection_sql(
   relation,
   "TABLE(" ~ ref('base_table') ~ ")",
   timestamp_colname='ORDER_TS',
@@ -17,7 +17,7 @@
   label_colname='IS_ANOMALY',
   object_tags={"GOVERNANCE.TEST_TAG": "sf-ai"}
 ) | lower %}
-{% set ddl_sql = sf_ai.sf_ai__sql_string(ddl) %}
+{% set ddl_sql = sf_ai.sql_string(ddl) %}
 
 select 'anomaly ddl missing expected clauses' as error_message
 where position('create or replace snowflake.ml.anomaly_detection' in {{ ddl_sql }}) = 0

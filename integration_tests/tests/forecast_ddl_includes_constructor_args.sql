@@ -10,7 +10,7 @@
 }}
 
 {% set relation = api.Relation.create(database=target.database, schema=target.schema, identifier='TEST_FORECAST') %}
-{% set ddl = sf_ai.sf_ai__get_create_forecast_sql(
+{% set ddl = sf_ai.snowflake__get_create_forecast_sql(
   relation,
   "TABLE(" ~ ref('base_table') ~ ")",
   timestamp_colname='ORDER_TS',
@@ -19,7 +19,7 @@
   config_object="OBJECT_CONSTRUCT('method', 'fast')",
   comment='test forecast'
 ) | lower %}
-{% set ddl_sql = sf_ai.sf_ai__sql_string(ddl) %}
+{% set ddl_sql = sf_ai.sql_string(ddl) %}
 
 select 'forecast ddl missing expected clauses' as error_message
 where position('create or replace snowflake.ml.forecast' in {{ ddl_sql }}) = 0

@@ -2,6 +2,7 @@ target/
 dbt_packages/
 logs/
 .dbt/
+.env
 integration_tests/.user.yml
 .venv/
 *.pyc

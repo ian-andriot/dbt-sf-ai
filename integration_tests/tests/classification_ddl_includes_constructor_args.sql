@@ -9,7 +9,7 @@
 }}
 
 {% set relation = api.Relation.create(database=target.database, schema=target.schema, identifier='TEST_CLASSIFICATION') %}
-{% set ddl = sf_ai.sf_ai__get_create_classification_sql(
+{% set ddl = sf_ai.snowflake__get_create_classification_sql(
   relation,
   "TABLE(" ~ ref('base_table') ~ ")",
   target_colname='CHURNED',
@@ -17,7 +17,7 @@
   if_not_exists=true,
   or_replace=false
 ) | lower %}
-{% set ddl_sql = sf_ai.sf_ai__sql_string(ddl) %}
+{% set ddl_sql = sf_ai.sql_string(ddl) %}
 
 select 'classification ddl missing expected clauses' as error_message
 where position('create' in {{ ddl_sql }}) = 0

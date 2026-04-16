@@ -13,8 +13,8 @@ models:
 instructions:
   response: "Answer briefly."
 {% endset %}
-{% set ddl = sf_ai.sf_ai__get_create_cortex_agent_sql(relation, spec, comment='test agent', profile={"display_name": "Test Agent", "color": "blue"}) | lower %}
-{% set ddl_sql = sf_ai.sf_ai__sql_string(ddl) %}
+{% set ddl = sf_ai.snowflake__get_create_cortex_agent_sql(relation, spec, comment='test agent', profile={"display_name": "Test Agent", "color": "blue"}) | lower %}
+{% set ddl_sql = sf_ai.sql_string(ddl) %}
 
 select 'agent ddl missing expected clauses' as error_message
 where position('create or replace agent' in {{ ddl_sql }}) = 0
