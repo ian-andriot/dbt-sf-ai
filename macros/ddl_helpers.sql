@@ -1,22 +1,3 @@
-{% macro raise_if_replace_and_exists(or_replace, if_not_exists) -%}
-  {%- if or_replace and if_not_exists -%}
-    {{ exceptions.raise_compiler_error("sf_ai materializations cannot set both or_replace=true and if_not_exists=true.") }}
-  {%- endif -%}
-{%- endmacro %}
-
-{% macro create_modifier(or_replace=false, if_not_exists=false) -%}
-  {{ sf_ai.raise_if_replace_and_exists(or_replace, if_not_exists) }}
-  {%- if or_replace -%}
-    or replace
-  {%- endif -%}
-{%- endmacro %}
-
-{% macro if_not_exists_clause(if_not_exists=false) -%}
-  {%- if if_not_exists -%}
-    if not exists
-  {%- endif -%}
-{%- endmacro %}
-
 {% macro sql_string(value) -%}
   '{{ (value | string).replace("'", "''") }}'
 {%- endmacro %}

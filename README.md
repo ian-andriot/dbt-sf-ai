@@ -130,14 +130,11 @@ Common configs:
 - `input_data`: raw Snowflake reference expression. If omitted, the materialization uses the model SQL body.
 - `comment`: emitted as `COMMENT = '<comment>'`.
 - `object_tags`: mapping emitted as `WITH TAG (...)`.
-- `or_replace`: defaults to `true`.
-- `if_not_exists`: supported for `forecast` and `classification`.
 
-`cortex_agent` always emits `CREATE OR REPLACE AGENT` so agent definitions converge the same way normal dbt relation materializations do.
+All custom materializations emit `CREATE OR REPLACE` DDL so definitions converge the same way normal dbt relation materializations do.
 
 The Snowflake ML Function objects managed by `forecast`, `anomaly`, and `classification` are not Snowflake Model Registry models. Snowflake's Model Registry documentation states that models trained with ML Functions, such as `FORECAST`, do not appear in the registry. If you need retention instead of replacement, use one of these patterns:
 
-- Use `if_not_exists=true` where Snowflake supports it to avoid replacing an existing model.
 - Version the object name itself with dbt aliases, for example `alias='revenue_forecast_v20260416'`.
 - For true registry/version/alias workflows, use Snowpark ML plus the Snowflake Model Registry rather than these SQL ML Function materializations.
 
