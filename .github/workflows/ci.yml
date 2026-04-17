@@ -8,12 +8,24 @@ on:
 jobs:
   parse:
     runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ACCOUNT: test_account
+      SNOWFLAKE_USER: test_user
+      SNOWFLAKE_PASSWORD: test_password
+      SNOWFLAKE_DATABASE: test_database
+      SNOWFLAKE_WAREHOUSE: test_warehouse
+      SNOWFLAKE_SCHEMA: SF_AI_CI_PARSE
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: python -m pip install --upgrade pip
-      - run: python -m pip install dbt-snowflake
-      - run: dbt deps
-      - run: dbt parse --profiles-dir integration_tests --target snowflake
+      - run: uv sync --locked
+      - run: uv run dbt deps --profiles-dir integration_tests
+      - run: uv run dbt parse --profiles-dir integration_tests --target snowflake
+      - run: >-
+          uv run dbt parse --profiles-dir integration_tests --target snowflake
+          --vars '{"sf_ai_enable_ai_integration_tests": true}'
