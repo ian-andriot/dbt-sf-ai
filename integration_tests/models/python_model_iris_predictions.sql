@@ -1,4 +1,3 @@
--- depends_on: {{ ref('python_model_iris') }}
 {{
   config(
     enabled=var('sf_ai_enable_registry_integration_tests', false),
