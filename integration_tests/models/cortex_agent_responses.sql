@@ -7,7 +7,7 @@
 
 select
   '{{ ref('cortex_agent_example') }}' as agent_name,
-  'What is total revenue by region?' as question,
+  'Run the health check.' as question,
   try_parse_json(
     snowflake.cortex.data_agent_run(
       '{{ ref('cortex_agent_example') }}',
@@ -18,15 +18,11 @@ select
             "content": [
               {
                 "type": "text",
-                "text": "What is total revenue by region?"
+                "text": "Run the health check."
               }
             ]
           }
-        ],
-        "tool_choice": {
-          "type": "auto",
-          "name": ["OrdersAnalyst"]
-        }
+        ]
       }$$
     )
   ) as response

@@ -24,6 +24,8 @@ models:
     description: "Minimal forecast training input without exogenous features."
   - name: forecast_predictions
     description: "Materialized forecast inference output from the forecast model instance."
+  - name: anomaly_scoring_data
+    description: "Scoring input with an extreme point for anomaly inference."
   - name: anomaly_detections
     description: "Materialized anomaly detection output from the anomaly model instance."
   - name: classification_predictions

@@ -6,7 +6,7 @@
   {{ sf_ai.comment_clause(comment) }}
   {{ sf_ai.profile_clause(profile) }}
   from specification
-  $$
-  {{ sql | trim }}
-  $$;
+$$
+{{ sql | trim }}
+$$;
 {%- endmacro %}

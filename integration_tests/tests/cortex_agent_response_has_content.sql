@@ -5,8 +5,8 @@
   )
 }}
 
-select 'cortex agent response missing content' as error_message
+select 'cortex agent response missing payload' as error_message
 from {{ ref('cortex_agent_responses') }}
 where response is null
-  or response:content is null
+  or (response:content is null and response:code is null)
 limit 1

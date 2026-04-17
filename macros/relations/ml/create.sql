@@ -37,7 +37,9 @@
 
   {{ sf_ai.require_config('timestamp_colname', timestamp_colname) }}
   {{ sf_ai.require_config('target_colname', target_colname) }}
-  {{ sf_ai.require_config('label_colname', label_colname) }}
+    {%- if label_colname is none -%}
+    {{ exceptions.raise_compiler_error("Missing required config . Pass an empty string if the training data is unlabeled.") }}
+  {%- endif -%}
 
   create or replace snowflake.ml.anomaly_detection {{ relation }}(
     input_data => {{ input_data }},

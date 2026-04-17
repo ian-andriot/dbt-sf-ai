@@ -8,10 +8,9 @@
 select *
 from table(
   {{ ref('anomaly_example') }}!detect_anomalies(
-    input_data => table({{ ref('base_table') }}),
+    input_data => table({{ ref('anomaly_scoring_data') }}),
     timestamp_colname => 'ORDER_TS',
     target_colname => 'REVENUE',
-    series_colname => 'REGION',
-    config_object => object_construct('prediction_interval', 0.95, 'on_error', 'skip')
+    config_object => object_construct('prediction_interval', 0.01, 'on_error', 'skip')
   )
 )

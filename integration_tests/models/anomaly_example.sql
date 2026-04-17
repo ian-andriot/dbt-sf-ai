@@ -4,8 +4,7 @@
     materialized='anomaly',
     timestamp_colname='ORDER_TS',
     target_colname='REVENUE',
-    label_colname='IS_ANOMALY',
-    series_colname='REGION',
+    label_colname='',
     config_object="OBJECT_CONSTRUCT('evaluate', true)",
     comment='sf-ai integration test anomaly detector'
   )
