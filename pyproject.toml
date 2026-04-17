@@ -1,6 +1,6 @@
 [project]
 name = "sf-ai-dbt-package"
-version = "0.1.0"
+version = "0.0.1"
 description = "dbt package for Snowflake AI DDL materializations"
 requires-python = ">=3.10"
 dependencies = [
