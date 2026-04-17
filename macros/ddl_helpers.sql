@@ -28,16 +28,6 @@
   {%- endif -%}
 {%- endmacro %}
 
-{% macro relation(identifier) -%}
-  {{ return(api.Relation.create(identifier=identifier, schema=schema, database=database, type='view')) }}
-{%- endmacro %}
-
-{% macro require_config(config_name, value) -%}
-  {%- if value is none or value == '' -%}
-    {{ exceptions.raise_compiler_error("Missing required config `" ~ config_name ~ "`.") }}
-  {%- endif -%}
-{%- endmacro %}
-
 {% macro input_data(sql, input_data) -%}
   {%- if input_data is not none and input_data != '' -%}
     {{ input_data }}
@@ -48,16 +38,4 @@
     {%- endif -%}
     {{ body }}
   {%- endif -%}
-{%- endmacro %}
-
-{% macro run_create_statement(target_relation, create_sql) -%}
-  {{ run_hooks(pre_hooks) }}
-
-  {% call statement('main') -%}
-    {{ create_sql }}
-  {%- endcall %}
-
-  {{ run_hooks(post_hooks) }}
-
-  {{ return({'relations': [target_relation]}) }}
 {%- endmacro %}
