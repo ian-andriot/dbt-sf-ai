@@ -16,8 +16,8 @@ Add this package to a consuming dbt project's `packages.yml`:
 
 ```yaml
 packages:
-  - git: "https://github.com/<your-org>/sf-ai.git"
-    revision: main
+  - git: "https://github.com/ian-andriot/dbt-sf-ai.git"
+    revision: v0.0.1
 ```
 
 Then run:
