@@ -4,7 +4,7 @@
 
 It provides:
 
-- `semantic_view`, as a small shim around Snowflake Labs' `dbt_semantic_view` package.
+- `semantic_view`, provided directly by the Snowflake Labs `dbt_semantic_view` dependency.
 - `cortex_agent`, backed by `CREATE OR REPLACE AGENT ... FROM SPECIFICATION`.
 - `forecast`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.FORECAST`.
 - `anomaly`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.ANOMALY_DETECTION`.
@@ -30,7 +30,7 @@ dbt deps
 
 ## Semantic View
 
-The semantic-view materialization is intentionally a shim. Write the Snowflake semantic view DDL body in the model SQL:
+The semantic-view materialization is provided directly by `Snowflake-Labs/dbt_semantic_view`. Write the Snowflake semantic view DDL body in the model SQL:
 
 ```sql
 {{ config(materialized='semantic_view') }}
