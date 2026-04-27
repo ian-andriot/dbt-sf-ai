@@ -40,6 +40,16 @@ models:
     description: "Cortex Agent fixture configured with a Cortex Search tool."
   - name: cortex_agent_search_responses
     description: "Materialized Cortex Agent response for a policy question answered via Cortex Search."
+  - name: sql_stored_procedure_example
+    description: "SQL stored procedure fixture returning a greeting table."
+  - name: sql_stored_procedure_results
+    description: "Materialized result from the SQL stored procedure fixture."
+  - name: python_stored_procedure_example
+    description: "Python stored procedure fixture returning a greeting table using an additional package."
+  - name: python_stored_procedure_results
+    description: "Materialized result from the Python stored procedure fixture."
+  - name: cortex_agent_with_procedures_example
+    description: "Cortex Agent fixture configured with SQL and Python stored procedure tools."
   - name: python_model_iris
     description: "Opt-in Snowflake Model Registry Iris classifier fixture."
     config:

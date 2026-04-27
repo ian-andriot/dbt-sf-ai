@@ -53,3 +53,43 @@
     {{ body }}
   {%- endif -%}
 {%- endmacro %}
+
+{% macro procedure_arguments(arguments) -%}
+  {%- if arguments is none -%}
+  {%- elif arguments is string -%}
+    {{ arguments }}
+  {%- elif arguments is sequence -%}
+    {%- for argument in arguments -%}
+      {%- if argument is mapping -%}
+        {{ argument.get('name') }}{% if argument.get('mode') %} {{ argument.get('mode') }}{% endif %} {{ argument.get('data_type', argument.get('type')) }}{% if argument.get('default') is not none %} default {{ argument.get('default') }}{% endif %}
+      {%- else -%}
+        {{ argument }}
+      {%- endif -%}
+      {{ ", " if not loop.last }}
+    {%- endfor -%}
+  {%- else -%}
+    {{ exceptions.raise_compiler_error("`arguments` must be a string or a list.") }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro sql_string_list(values) -%}
+  {%- for value in values -%}
+    {{ sf_ai.sql_string(value) }}{{ ", " if not loop.last }}
+  {%- endfor -%}
+{%- endmacro %}
+
+{% macro identifier_list(values) -%}
+  {%- for value in values -%}
+    {{ value }}{{ ", " if not loop.last }}
+  {%- endfor -%}
+{%- endmacro %}
+
+{% macro secrets_clause(secrets) -%}
+  {%- if secrets is mapping and secrets | length > 0 -%}
+    secrets = (
+      {%- for secret_variable_name, secret_name in secrets.items() -%}
+        {{ sf_ai.sql_string(secret_variable_name) }} = {{ secret_name }}{{ ", " if not loop.last }}
+      {%- endfor -%}
+    )
+  {%- endif -%}
+{%- endmacro %}

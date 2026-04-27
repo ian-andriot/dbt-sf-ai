@@ -7,6 +7,7 @@ It provides:
 - `semantic_view`, provided directly by the Snowflake Labs `dbt_semantic_view` dependency.
 - `cortex_agent`, backed by `CREATE OR REPLACE AGENT ... FROM SPECIFICATION`.
 - `cortex_search_service`, backed by `CREATE OR REPLACE CORTEX SEARCH SERVICE`.
+- `stored_procedure`, backed by `CREATE OR REPLACE PROCEDURE` for SQL and Python models.
 - `forecast`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.FORECAST`.
 - `anomaly`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.ANOMALY_DETECTION`.
 - `classification`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.CLASSIFICATION`.
@@ -51,13 +52,12 @@ comment = 'Orders semantic view'
 
 ## Cortex Agent
 
-Put the agent YAML specification in the model body. Optional `comment` and `profile` configs map to the Snowflake DDL clauses.
+Put the agent YAML specification in the model body. Optional `profile` config maps to the Snowflake DDL clause.
 
 ```sql
 {{
   config(
     materialized='cortex_agent',
-    comment='Revenue analyst agent',
     profile={"display_name": "Revenue Analyst", "color": "blue"}
   )
 }}
@@ -88,8 +88,7 @@ Use `cortex_search_service` when the model SQL body is the source query to index
     primary_key=['DOC_ID'],
     attributes=['CATEGORY'],
     target_lag='1 day',
-    initialize='ON_CREATE',
-    comment='Policy search index'
+    initialize='ON_CREATE'
   )
 }}
 
@@ -115,7 +114,6 @@ Supported optional configs:
 - `initialize`
 - `full_index_build_interval_days`
 - `request_logging`
-- `comment`, which overrides the model `description` for the Snowflake object comment
 
 You can use the resulting service in a Cortex Agent search tool by referencing it in the agent specification:
 
@@ -144,6 +142,80 @@ tool_resources:
         filterable: true
 ```
 
+## Stored Procedures
+
+Use `stored_procedure` to create Snowflake stored procedures from either SQL or Python dbt models. The model language determines the procedure language.
+
+SQL models use the model body as the Snowflake Scripting procedure body:
+
+```sql
+{{
+  config(
+    materialized='stored_procedure',
+    arguments=['NAME STRING'],
+    returns='TABLE (GREETING STRING)',
+    execute_as='CALLER'
+  )
+}}
+
+DECLARE
+  res RESULTSET;
+BEGIN
+  res := (select 'hello ' || :NAME as greeting);
+  RETURN TABLE(res);
+END
+```
+
+Python models keep dbt's standard two-argument `model(dbt, session)` contract. If the model returns a callable, the materialization invokes that callable with the stored procedure arguments:
+
+```python
+def model(dbt, session):
+    dbt.config(
+        materialized="stored_procedure",
+        arguments=["NAME STRING"],
+        returns="TABLE (GREETING STRING)",
+        packages=["snowflake-snowpark-python"],
+        execute_as="CALLER",
+    )
+
+    def run(name):
+        return session.create_dataframe([[f"hello {name}"]], schema=["GREETING"])
+
+    return run
+```
+
+Required configs:
+
+- `returns`
+
+Common optional configs:
+
+- `arguments`: string, list of raw argument strings, or list of mappings with `name`, `type` or `data_type`, optional `mode`, and optional `default`.
+- `copy_grants`
+- `secure`
+- `temporary`
+- `null_input_behavior`
+- `volatility`
+- `execute_as`
+
+Python-only optional configs:
+
+- `python_version`, defaulting to `3.10`
+- `packages`, defaulting to `['snowflake-snowpark-python']`
+- `imports`
+- `external_access_integrations`
+- `secrets`
+- `artifact_repository`
+
+Stored procedures that return a static table schema can be used in downstream dbt SQL models with Snowflake's `TABLE(...)` syntax:
+
+```sql
+select *
+from table({{ ref('python_stored_procedure_example') }}('dbt'))
+```
+
+The materialization wraps procedure bodies in Snowflake `$$` delimiters. Avoid raw `$$` inside stored procedure bodies, because Snowflake will treat it as the end of the body literal.
+
 ## Forecast Model
 
 The model body should be a Snowflake reference expression such as `TABLE(...)`, `SYSTEM$REFERENCE(...)`, or `SYSTEM$QUERY_REFERENCE(...)`. You can also pass `input_data` as a config value.
@@ -155,8 +227,7 @@ The model body should be a Snowflake reference expression such as `TABLE(...)`, 
     timestamp_colname='ORDER_DATE',
     target_colname='REVENUE',
     series_colname='REGION',
-    config_object="OBJECT_CONSTRUCT('method', 'fast')",
-    comment='Revenue forecast model'
+    config_object="OBJECT_CONSTRUCT('method', 'fast')"
   )
 }}
 
@@ -336,3 +407,12 @@ dbt build --target snowflake --select +cortex_agent_with_search_example+ --vars 
 ```
 
 Trial accounts can create the search service and agent object, but Snowflake currently rejects the search-tool `DATA_AGENT_RUN` path with `Access denied for trial accounts.`
+
+
+Run the opt-in stored procedure integration path separately:
+
+```shell
+dbt build --target snowflake --select sql_stored_procedure_example+ python_stored_procedure_example+ --vars '{"sf_ai_enable_procedure_integration_tests": true}'
+```
+
+That path creates SQL and Python stored procedures, creates a Cortex Agent that references both procedures as custom tools, materializes result tables from `TABLE(procedure(...))`, and runs invocation assertions.
