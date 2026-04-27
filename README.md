@@ -115,7 +115,7 @@ Supported optional configs:
 - `initialize`
 - `full_index_build_interval_days`
 - `request_logging`
-- `comment`
+- `comment`, which overrides the model `description` for the Snowflake object comment
 
 You can use the resulting service in a Cortex Agent search tool by referencing it in the agent specification:
 

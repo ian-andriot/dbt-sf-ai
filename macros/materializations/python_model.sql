@@ -13,7 +13,7 @@
   {%- set aliases = config.get('aliases', default=[]) -%}
   {%- set metrics = config.get('metrics', default={}) -%}
   {%- set registry_tags = config.get('registry_tags', default={}) -%}
-  {%- set comment = config.get('comment', default=none) -%}
+  {%- set comment = sf_ai.object_comment(config.get('comment', default=none)) -%}
   {%- set set_default = config.get('set_default', default=false) -%}
   {%- set registry_options = config.get('registry_options', default=none) -%}
   {%- set log_model_options = config.get('log_model_options', default=none) -%}

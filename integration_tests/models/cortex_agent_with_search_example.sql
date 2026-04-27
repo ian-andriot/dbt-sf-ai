@@ -2,7 +2,6 @@
   config(
     enabled=var('sf_ai_enable_cortex_search_integration_tests', false),
     materialized='cortex_agent',
-    comment='sf-ai integration test agent with cortex search',
     profile={"display_name": "sf-ai search agent", "color": "green"}
   )
 }}

@@ -1,7 +1,7 @@
 {% materialization cortex_search_service, adapter='snowflake' -%}
   {%- set original_query_tag = set_query_tag() -%}
   {%- set target_relation = api.Relation.create(identifier=model['alias'], schema=schema, database=database, type='view') -%}
-  {%- set search_column = config.get('search_column', default=none) -%}
+  {%- set search_column = config.require('search_column') -%}
   {%- set primary_key = config.get('primary_key', default=[]) -%}
   {%- set attributes = config.get('attributes', default=[]) -%}
   {%- set warehouse = config.get('warehouse', default=target.warehouse) -%}
@@ -11,19 +11,11 @@
   {%- set initialize = config.get('initialize', default='ON_CREATE') -%}
   {%- set full_index_build_interval_days = config.get('full_index_build_interval_days', default=none) -%}
   {%- set request_logging = config.get('request_logging', default=none) -%}
-  {%- set comment = config.get('comment', default=none) -%}
+  {%- set comment = sf_ai.object_comment(config.get('comment', default=none)) -%}
 
-  {%- if search_column is none or search_column == '' -%}
-    {{ exceptions.raise_compiler_error("Missing required config `search_column`.") }}
-  {%- endif -%}
-  {%- if attributes is not sequence or attributes is string or attributes | length == 0 -%}
-    {{ exceptions.raise_compiler_error("Missing required config `attributes`. Pass a non-empty list of attribute columns.") }}
-  {%- endif -%}
-  {%- if warehouse is none or warehouse == '' -%}
+  {%- do sf_ai.config_require_non_empty_list("attributes", attributes) -%}
+  {%- if warehouse is none or warehouse == "" -%}
     {{ exceptions.raise_compiler_error("Missing required config `warehouse`, and no target warehouse was available.") }}
-  {%- endif -%}
-  {%- if target_lag is none or target_lag == '' -%}
-    {{ exceptions.raise_compiler_error("Missing required config `target_lag`.") }}
   {%- endif -%}
 
   {{ run_hooks(pre_hooks) }}

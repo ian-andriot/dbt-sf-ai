@@ -1,7 +1,7 @@
 {% materialization cortex_agent, adapter='snowflake' -%}
   {%- set original_query_tag = set_query_tag() -%}
   {%- set target_relation = api.Relation.create(identifier=model['alias'], schema=schema, database=database, type='view') -%}
-  {%- set comment = config.get('comment', default=none) -%}
+  {%- set comment = sf_ai.object_comment(config.get('comment', default=none)) -%}
   {%- set profile = config.get('profile', default=none) -%}
 
   {{ run_hooks(pre_hooks) }}

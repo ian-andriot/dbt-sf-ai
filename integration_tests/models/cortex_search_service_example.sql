@@ -6,8 +6,7 @@
     primary_key=['DOC_ID'],
     attributes=['CATEGORY'],
     target_lag='1 day',
-    initialize='ON_CREATE',
-    comment='sf-ai integration test cortex search service'
+    initialize='ON_CREATE'
   )
 }}
 

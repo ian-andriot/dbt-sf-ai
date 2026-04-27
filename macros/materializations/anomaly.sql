@@ -1,21 +1,15 @@
 {% materialization anomaly, adapter='snowflake' -%}
   {%- set original_query_tag = set_query_tag() -%}
   {%- set target_relation = api.Relation.create(identifier=model['alias'], schema=schema, database=database, type='view') -%}
-  {%- set timestamp_colname = config.get('timestamp_colname', default=none) -%}
-  {%- set target_colname = config.get('target_colname', default=none) -%}
+  {%- set timestamp_colname = config.require('timestamp_colname') -%}
+  {%- set target_colname = config.require('target_colname') -%}
   {%- set label_colname = config.get('label_colname', default=none) -%}
   {%- set series_colname = config.get('series_colname', default=none) -%}
   {%- set config_object = config.get('config_object', default=none) -%}
   {%- set input_data = sf_ai.input_data(sql, config.get('input_data', default=none)) -%}
   {%- set object_tags = config.get('object_tags', default={}) -%}
-  {%- set comment = config.get('comment', default=none) -%}
+  {%- set comment = sf_ai.object_comment(config.get('comment', default=none)) -%}
 
-  {%- if timestamp_colname is none or timestamp_colname == '' -%}
-    {{ exceptions.raise_compiler_error("Missing required config `timestamp_colname`.") }}
-  {%- endif -%}
-  {%- if target_colname is none or target_colname == '' -%}
-    {{ exceptions.raise_compiler_error("Missing required config `target_colname`.") }}
-  {%- endif -%}
   {%- if label_colname is none -%}
     {{ exceptions.raise_compiler_error("Missing required config `label_colname`. Pass an empty string if the training data is unlabeled.") }}
   {%- endif -%}
