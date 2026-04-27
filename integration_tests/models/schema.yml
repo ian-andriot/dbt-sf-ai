@@ -32,6 +32,14 @@ models:
     description: "Materialized classification predictions from the classification model instance."
   - name: cortex_agent_responses
     description: "Materialized Cortex Agent response for a sample semantic-view question."
+  - name: cortex_search_documents
+    description: "Integration fixture corpus for the Cortex Search service example."
+  - name: cortex_search_service_example
+    description: "Cortex Search service fixture used by the search-enabled Cortex Agent example."
+  - name: cortex_agent_with_search_example
+    description: "Cortex Agent fixture configured with a Cortex Search tool."
+  - name: cortex_agent_search_responses
+    description: "Materialized Cortex Agent response for a policy question answered via Cortex Search."
   - name: python_model_iris
     description: "Opt-in Snowflake Model Registry Iris classifier fixture."
     config:

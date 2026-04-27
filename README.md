@@ -6,6 +6,7 @@ It provides:
 
 - `semantic_view`, provided directly by the Snowflake Labs `dbt_semantic_view` dependency.
 - `cortex_agent`, backed by `CREATE OR REPLACE AGENT ... FROM SPECIFICATION`.
+- `cortex_search_service`, backed by `CREATE OR REPLACE CORTEX SEARCH SERVICE`.
 - `forecast`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.FORECAST`.
 - `anomaly`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.ANOMALY_DETECTION`.
 - `classification`, backed by `CREATE OR REPLACE SNOWFLAKE.ML.CLASSIFICATION`.
@@ -73,6 +74,74 @@ tools:
 tool_resources:
   RevenueAnalyst:
     semantic_view: "{{ ref('revenue_semantic_view') }}"
+```
+
+## Cortex Search Service
+
+Use `cortex_search_service` when the model SQL body is the source query to index. The materialization emits `CREATE OR REPLACE CORTEX SEARCH SERVICE` and expects the source query in the model body.
+
+```sql
+{{
+  config(
+    materialized='cortex_search_service',
+    search_column='TEXT',
+    primary_key=['DOC_ID'],
+    attributes=['CATEGORY'],
+    target_lag='1 day',
+    initialize='ON_CREATE',
+    comment='Policy search index'
+  )
+}}
+
+select
+  doc_id,
+  text,
+  category
+from {{ ref('policy_documents') }}
+```
+
+Required configs:
+
+- `search_column`
+- `attributes`
+- `warehouse` or a target profile with `warehouse`
+- `target_lag`
+
+Supported optional configs:
+
+- `primary_key`
+- `embedding_model`
+- `refresh_mode`
+- `initialize`
+- `full_index_build_interval_days`
+- `request_logging`
+- `comment`
+
+You can use the resulting service in a Cortex Agent search tool by referencing it in the agent specification:
+
+```yaml
+tools:
+  - tool_spec:
+      type: "cortex_search"
+      name: "PolicySearch"
+      description: "Searches refund and support policies"
+tool_resources:
+  PolicySearch:
+    name: "{{ ref('cortex_search_service_example') }}"
+    max_results: 3
+    title_column: "DOC_ID"
+    id_column: "DOC_ID"
+    columns_and_descriptions:
+      TEXT:
+        description: "Policy text"
+        type: "string"
+        searchable: true
+        filterable: false
+      CATEGORY:
+        description: "Policy category such as refund or support"
+        type: "string"
+        searchable: false
+        filterable: true
 ```
 
 ## Forecast Model
@@ -252,3 +321,18 @@ dbt build --target snowflake --select python_model_iris+ --vars '{"sf_ai_enable_
 ```
 
 That path creates an Iris classifier version, appends one row to the `python_model_iris` history table, materializes SQL inference results through `registry_model_call`, and runs the registry tests.
+
+
+Run the opt-in Cortex Search integration path separately:
+
+```shell
+dbt run --target snowflake --select +cortex_agent_with_search_example --vars '{"sf_ai_enable_cortex_search_integration_tests": true}'
+```
+
+On accounts with Cortex Search enabled for agent execution, you can run the full end-to-end search-agent assertion with:
+
+```shell
+dbt build --target snowflake --select +cortex_agent_with_search_example+ --vars '{"sf_ai_enable_cortex_search_integration_tests": true}'
+```
+
+Trial accounts can create the search service and agent object, but Snowflake currently rejects the search-tool `DATA_AGENT_RUN` path with `Access denied for trial accounts.`
