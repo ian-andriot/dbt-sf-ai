@@ -76,6 +76,47 @@ tool_resources:
     semantic_view: "{{ ref('revenue_semantic_view') }}"
 ```
 
+Skills can be managed as dbt models and referenced from the agent YAML with normal Snowflake staged skill syntax. A `cortex_skill` model writes its SQL body to `SKILL.md` in a Snowflake stage:
+
+```sql
+{{
+  config(
+    materialized='cortex_skill'
+  )
+}}
+
+name: RefundPolicy
+description: Answers questions about refund windows.
+
+# Instructions
+
+Use this skill when the user asks about refund windows.
+
+Gold members have a 45 day refund window.
+```
+
+Reference the skill stage from a Cortex Agent model:
+
+```sql
+{{
+  config(
+    materialized='cortex_agent'
+  )
+}}
+
+models:
+  orchestration: claude-4-sonnet
+instructions:
+  response: "Answer briefly."
+skills:
+  - name: RefundPolicy
+    source:
+      type: STAGE
+      path: "@{{ ref('refund_policy_skill') }}"
+```
+
+The skill materialization validates that the body includes Snowflake's required `SKILL.md` fields: `name`, `description`, and instructions content. It creates a directory-enabled stage, writes `SKILL.md` with a temporary Python procedure, and refreshes the directory table so integration tests can assert the uploaded file exists.
+
 ## Cortex Search Service
 
 Use `cortex_search_service` when the model SQL body is the source query to index. The materialization emits `CREATE OR REPLACE CORTEX SEARCH SERVICE` and expects the source query in the model body.
@@ -408,6 +449,14 @@ dbt build --target snowflake --select +cortex_agent_with_search_example+ --vars 
 
 Trial accounts can create the search service and agent object, but Snowflake currently rejects the search-tool `DATA_AGENT_RUN` path with `Access denied for trial accounts.`
 
+
+Run the opt-in Cortex Agent skill creation path separately:
+
+```shell
+dbt build --target snowflake --select +cortex_agent_with_doc_skill_example+ --vars '{"sf_ai_enable_cortex_skill_integration_tests": true}'
+```
+
+That path creates the managed skill stage, uploads the skill model body as `SKILL.md`, creates the Cortex Agent, materializes directory-table rows for the stage, and asserts the managed skill file exists. It does not call `DATA_AGENT_RUN`, so it avoids the trial-account prompt/execution restriction.
 
 Run the opt-in stored procedure integration path separately:
 

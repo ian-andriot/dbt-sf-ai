@@ -40,6 +40,12 @@ models:
     description: "Cortex Agent fixture configured with a Cortex Search tool."
   - name: cortex_agent_search_responses
     description: "Materialized Cortex Agent response for a policy question answered via Cortex Search."
+  - name: refund_policy_skill
+    description: "Cortex Agent skill fixture uploaded as SKILL.md to a Snowflake stage."
+  - name: cortex_agent_with_doc_skill_example
+    description: "Cortex Agent fixture with a dbt-managed skill stage."
+  - name: cortex_agent_doc_skill_stage_files
+    description: "Directory table rows for the managed Cortex Agent skill stage."
   - name: sql_stored_procedure_example
     description: "SQL stored procedure fixture returning a greeting table."
   - name: sql_stored_procedure_results
