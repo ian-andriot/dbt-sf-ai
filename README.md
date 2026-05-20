@@ -20,7 +20,7 @@ Add this package to a consuming dbt project's `packages.yml`:
 ```yaml
 packages:
   - git: "https://github.com/ian-andriot/dbt-sf-ai.git"
-    revision: v0.2.0
+    revision: v0.3.0
 ```
 
 Then run:
